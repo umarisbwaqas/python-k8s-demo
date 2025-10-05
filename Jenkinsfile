@@ -67,11 +67,10 @@ pipeline {
                     try {
                         echo "Deploying to Kubernetes..."
                         
-                        // Update deployment image
+                        // Update image tag in k8s manifest and apply
                         sh '''
-                            kubectl set image deployment/${K8S_DEPLOYMENT} \
-                                ${K8S_DEPLOYMENT}=${IMAGE_NAME}:${IMAGE_TAG} \
-                                -n ${K8S_NAMESPACE}
+                            sed "s|image: ${IMAGE_NAME}.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|g" k8s/k8s-deployment.yml > k8s/k8s-deployment-updated.yml
+                            kubectl apply -f k8s/k8s-deployment.yml
                         '''
                         
                         // Wait for rollout to complete
