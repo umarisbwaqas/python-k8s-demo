@@ -39,7 +39,7 @@ metadata:
   name: python-k8s-demo
   namespace: default
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: python-k8s-demo
   ports:
@@ -47,4 +47,3 @@ spec:
     protocol: TCP
     port: 80
     targetPort: 5000
-    nodePort: 30080

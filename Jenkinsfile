@@ -52,6 +52,7 @@ pipeline {
                                 echo "Pushing Docker images..."
                                 docker push ${IMAGE_NAME}:${IMAGE_TAG}
                                 docker push ${IMAGE_NAME}:latest
+                                docker logout
                             '''
                         }
                     } catch (Exception e) {
@@ -96,6 +97,7 @@ pipeline {
                     docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true
                     docker rmi ${IMAGE_NAME}:latest || true
                     docker system prune -f || true
+                    rm -f k8s/k8s-deployment-updated.yml || true
                 '''
             }
             echo "Pipeline finished."
