@@ -3,11 +3,17 @@ FROM jenkins/jenkins:lts
 # Switch to root to install additional packages
 USER root
 
-# Install required dependencies
+# Install Docker CLI using static binary
+RUN curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.24.tgz | tar xzf - --strip 1 -C /usr/local/bin docker/docker
+
+# Install other dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     && rm -rf /var/lib/apt/lists/*
+
+# Add jenkins user to docker group (create group first)
+RUN groupadd -g 999 docker && usermod -aG docker jenkins
 
 # Define Terraform version
 ENV TERRAFORM_VERSION=1.5.3

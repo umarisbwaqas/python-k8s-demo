@@ -86,3 +86,5 @@ terraform
 job-dsl
 ansicolor
 ansible
+docker-workflow
+docker-plugin
