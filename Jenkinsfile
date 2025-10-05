@@ -5,6 +5,8 @@ pipeline {
         IMAGE_NAME = "umarisbwaqas/python-k8s-demo"
         IMAGE_TAG = "${BUILD_NUMBER}"
         DOCKERFILE_PATH = "./app"
+        K8S_NAMESPACE = "default"
+        K8S_DEPLOYMENT = "python-k8s-demo"
     }
 
     stages {
@@ -58,6 +60,33 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    try {
+                        echo "Deploying to Kubernetes..."
+                        
+                        // Update deployment image
+                        sh '''
+                            kubectl set image deployment/${K8S_DEPLOYMENT} \
+                                ${K8S_DEPLOYMENT}=${IMAGE_NAME}:${IMAGE_TAG} \
+                                -n ${K8S_NAMESPACE}
+                        '''
+                        
+                        // Wait for rollout to complete
+                        sh '''
+                            kubectl rollout status deployment/${K8S_DEPLOYMENT} \
+                                -n ${K8S_NAMESPACE} --timeout=300s
+                        '''
+                        
+                        echo "Deployment successful!"
+                    } catch (Exception e) {
+                        error("Kubernetes deployment failed: ${e.getMessage()}")
+                    }
+                }
+            }
+        }
     }
 
     post {
@@ -73,7 +102,9 @@ pipeline {
             echo "Pipeline finished."
         }
         success {
-            echo "Pipeline completed successfully! Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "Pipeline completed successfully!"
+            echo "Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "Deployed to Kubernetes cluster"
         }
         failure {
             echo "Pipeline failed. Check logs for details."

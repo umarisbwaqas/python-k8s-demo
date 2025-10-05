@@ -6,6 +6,11 @@ USER root
 # Install Docker CLI using static binary
 RUN curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.24.tgz | tar xzf - --strip 1 -C /usr/local/bin docker/docker
 
+# Install kubectl
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
+    && chmod +x kubectl \
+    && mv kubectl /usr/local/bin/
+
 # Install other dependencies
 RUN apt-get update && apt-get install -y \
     curl \
