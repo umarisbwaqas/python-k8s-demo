@@ -11,6 +11,13 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
     && chmod +x kubectl \
     && mv kubectl /usr/local/bin/
 
+# Install SonarQube Scanner
+RUN curl -fsSL https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip -o sonar-scanner.zip \
+    && unzip sonar-scanner.zip \
+    && mv sonar-scanner-4.8.0.2856-linux /opt/sonar-scanner \
+    && ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner \
+    && rm sonar-scanner.zip
+
 # Install other dependencies
 RUN apt-get update && apt-get install -y \
     curl \
