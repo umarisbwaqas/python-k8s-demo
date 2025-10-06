@@ -37,6 +37,28 @@ pipeline {
             }
         }
 
+        stage('Code Analysis') {
+            steps {
+                script {
+                    try {
+                        echo "Running SonarQube analysis..."
+                        withSonarQubeEnv('sonarqube') {
+                            sh '''
+                                sonar-scanner \
+                                    -Dsonar.projectKey=python-k8s-demo \
+                                    -Dsonar.projectName="Python K8s Demo" \
+                                    -Dsonar.sources=app/ \
+                                    -Dsonar.host.url=http://sonarqube:9000 \
+                                    -Dsonar.python.coverage.reportPaths=coverage.xml
+                            '''
+                        }
+                    } catch (Exception e) {
+                        echo "SonarQube analysis failed: ${e.getMessage()}"
+                    }
+                }
+            }
+        }
+
         stage('Push Docker Image') {
             steps {
                 script {
